@@ -1,6 +1,8 @@
 package com.mink.massac.auth.config;
 
 import io.jsonwebtoken.JwtException;
+import com.mink.massac.common.exception.CommonErrorCode;
+import com.mink.massac.common.exception.ErrorResponseWriter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,20 +50,15 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.setContext(context);
             } catch (JwtException | IllegalArgumentException e) {
                 SecurityContextHolder.clearContext();
-                error(response, 401, "Invalid or expired token");
+                ErrorResponseWriter.write(response, CommonErrorCode.INVALID_TOKEN);
                 return;
             } catch (DataAccessException e) {
                 SecurityContextHolder.clearContext();
-                error(response, 503, "Authentication service unavailable");
+                ErrorResponseWriter.write(response, CommonErrorCode.SERVICE_UNAVAILABLE);
                 return;
             }
         }
         chain.doFilter(request, response);
     }
 
-    public static void error(HttpServletResponse response, int status, String message) throws IOException {
-        response.setStatus(status);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write("{\"message\":\"" + message + "\"}");
-    }
 }
