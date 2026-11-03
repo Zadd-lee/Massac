@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -25,9 +27,16 @@ public class Role extends CreateAndUpdateDate {
     @Column(nullable = false)
     private Status status;
 
+    @OneToMany
+    private List<UserRole> userRoleList;
+
     public Role(String code, String name, Status status) {
         this.code = code;
         this.name = name;
         this.status = status;
+    }
+
+    public void addUser(User user) {
+        this.userRoleList.add(new UserRole(this, user));
     }
 }
