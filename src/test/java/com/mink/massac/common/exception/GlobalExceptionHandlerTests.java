@@ -14,6 +14,13 @@ class GlobalExceptionHandlerTests {
             .setControllerAdvice(new GlobalExceptionHandler()).build();
 
     @Test
+    void databaseConstraintViolationReturnsCommonConflict() throws Exception {
+        mvc.perform(get("/constraint"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("COMMON_409"));
+    }
+
+    @Test
     void customExceptionReturnsDefinedStatusAndCode() throws Exception {
         mvc.perform(get("/custom"))
                 .andExpect(status().isConflict())
@@ -39,6 +46,11 @@ class GlobalExceptionHandlerTests {
 
     @RestController
     static class TestController {
+        @GetMapping("/constraint")
+        public void constraint() {
+            throw new org.springframework.dao.DataIntegrityViolationException("duplicate");
+        }
+
         @GetMapping("/custom")
         public void custom() { throw new CustomException(CommonErrorCode.CONFLICT); }
 
