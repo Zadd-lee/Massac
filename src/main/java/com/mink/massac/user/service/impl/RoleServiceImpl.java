@@ -3,6 +3,7 @@ package com.mink.massac.user.service.impl;
 import com.mink.massac.common.exception.CustomException;
 import com.mink.massac.common.entity.Status;
 import com.mink.massac.user.dto.CreateRoleRequestDto;
+import com.mink.massac.user.dto.UpdateRoleNameRequestDto;
 import com.mink.massac.user.entity.Role;
 import com.mink.massac.user.exception.RoleErrorCode;
 import com.mink.massac.user.repository.RoleRepository;
@@ -29,6 +30,19 @@ public class RoleServiceImpl implements RoleService {
 
         Role role = dto.toEntity();
         roleRepository.save(role);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ROLE_UPDATE')")
+    public void updateName(Long roleId, UpdateRoleNameRequestDto dto) {
+        if (roleId == null || roleId <= 0) {
+            throw new CustomException(RoleErrorCode.INVALID_ROLE);
+        }
+        Role role = roleRepository.findById(roleId)
+                .filter(value -> value.getStatus() != Status.DELETED)
+                .orElseThrow(() -> new CustomException(RoleErrorCode.ROLE_NOT_FOUND));
+        role.rename(dto.name());
     }
 
     @Override

@@ -46,4 +46,8 @@ public class Role extends CreateAndUpdateDate {
     public void delete() {
         this.status = Status.DELETED;
     }
+
+    public void rename(String name) {
+        this.name = name;
+    }
 }
