@@ -3,16 +3,17 @@ package com.mink.massac.user.entity;
 import com.mink.massac.common.entity.CreateAndUpdateDate;
 import com.mink.massac.common.entity.Status;
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_role_code", columnNames = "code"))
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Role extends CreateAndUpdateDate {
 
     @Id
@@ -22,15 +23,15 @@ public class Role extends CreateAndUpdateDate {
     @Column(nullable = false)
     private String code;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
 
-    @OneToMany
-    private List<UserRole> userRoleList;
+    @OneToMany(mappedBy = "role")
+    private List<UserRole> userRoleList = new ArrayList<>();
 
     public Role(String code, String name) {
         this.code = code;
@@ -40,5 +41,9 @@ public class Role extends CreateAndUpdateDate {
 
     public void addUser(User user) {
         this.userRoleList.add(new UserRole(this, user));
+    }
+
+    public void delete() {
+        this.status = Status.DELETED;
     }
 }

@@ -4,8 +4,6 @@ import com.mink.massac.common.entity.CreateAndUpdateDate;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
