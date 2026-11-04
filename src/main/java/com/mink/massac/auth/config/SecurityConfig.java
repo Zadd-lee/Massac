@@ -1,6 +1,8 @@
 package com.mink.massac.auth.config;
 
 import java.util.Arrays;
+import com.mink.massac.common.exception.CommonErrorCode;
+import com.mink.massac.common.exception.ErrorResponseWriter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
-                        .authenticationEntryPoint((req, res, e) -> JwtFilter.error(res, 401, "Authentication required"))
-                        .accessDeniedHandler((req, res, e) -> JwtFilter.error(res, 403, "Access denied")))
+                        .authenticationEntryPoint((req, res, e) -> ErrorResponseWriter.write(res, CommonErrorCode.AUTHENTICATION_REQUIRED))
+                        .accessDeniedHandler((req, res, e) -> ErrorResponseWriter.write(res, CommonErrorCode.ACCESS_DENIED)))
                 .addFilterBefore(new JwtFilter(jwt, store), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
